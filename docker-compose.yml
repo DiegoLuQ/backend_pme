@@ -9,7 +9,7 @@ services:
     volumes:
       - ./app:/pme/
     environment:
-      - RUTA_CLUSTER=${RUTA_MONGO}
+      - RUTA_MONGO=${RUTA_MONGO}
 
   nginx_pme:
     image: nginx:latest

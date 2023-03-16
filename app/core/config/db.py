@@ -1,6 +1,6 @@
 from pymongo import MongoClient
+from .config import settings
 
-
-client = MongoClient("mongodb://localhost:27017/")
+client = MongoClient(settings.RUTA_MONGO)
 
 db = client.db_colegio
