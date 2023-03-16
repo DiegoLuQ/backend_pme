@@ -17,8 +17,8 @@ services:
     #   - "80:80"
     environment:
       - VIRTUAL_PORT=80
-      - VIRTUAL_HOST=pme.diego-luque.com
-      - LETSENCRYPT_HOST=pme.diego-luque.com
+      - VIRTUAL_HOST=api-pme.diego-luque.com
+      - LETSENCRYPT_HOST=api-pme.diego-luque.com
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf
 
