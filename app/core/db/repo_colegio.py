@@ -7,9 +7,9 @@ coleccion_colegio = db.colegios
 def registrar_colegio(model: dict):
     try:
         if coleccion_colegio.find_one({"nombre": model['nombre']}):
-            return False
-        if coleccion_colegio.find({'rbd': model['rbd']}):
-            return False
+            return True
+        if coleccion_colegio.find_one({'rbd': model['rbd']}):
+            return True
 
         colegio = coleccion_colegio.insert_one(model)
         if colegio:

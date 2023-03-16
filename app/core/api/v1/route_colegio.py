@@ -4,7 +4,8 @@ from fastapi.responses import JSONResponse
 from fastapi.encoders import jsonable_encoder
 from core.schemas.Schema_colegio import SchemaColegio, SchemaColegioUpdate
 from core.db.repo_colegio import (buscar_colegio, eliminar_colegio,
-                                  patch_colegio, registrar_colegio,mostrar_colegios,obtener_pme_colegio)
+                                  patch_colegio, registrar_colegio,
+                                  mostrar_colegios, obtener_pme_colegio)
 
 router = APIRouter()
 
@@ -24,25 +25,27 @@ def add_colegio(model: SchemaColegio):
     try:
         model = jsonable_encoder(model)
         data = registrar_colegio(model)
-        if data:
+        if data is False:
+            return JSONResponse(status_code=status.HTTP_409_CONFLICT,
+                                content={"msg": "Colegio ya esta registrado"})
+        else:
             return JSONResponse(status_code=status.HTTP_201_CREATED,
                                 content={
                                     "msg": "Colegio creado con exito",
                                     "data": data
                                 })
-        else:
-            return JSONResponse(status_code=status.HTTP_409_CONFLICT, content={"msg":"Colegio ya esta registrado"})
-        
     except Exception as e:
         print(e)
+
 
 @router.get('/')
 def colegios():
     try:
-      return mostrar_colegios()
+        return mostrar_colegios()
     except Exception as e:
-      print(e)
-      
+        print(e)
+
+
 @router.get('/{nombre}')
 def obtener_colegio(nombre: str):
     try:
@@ -50,13 +53,13 @@ def obtener_colegio(nombre: str):
         data = buscar_colegio(nombre)
         if data is False:
             return JSONResponse(status_code=status.HTTP_404_NOT_FOUND,
-                                 content={"msg": "Colegio no encontrado"})
+                                content={"msg": "Colegio no encontrado"})
         if data:
             return JSONResponse(status_code=status.HTTP_200_OK,
                                 content={"data": data})
     except ValidationError:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
-                             detail={"msg": "Colegio no encontrado"})
+                            detail={"msg": "Colegio no encontrado"})
 
 
 @router.patch('/modificar/{id}')
@@ -86,12 +89,13 @@ def borrar_colegio(id: str):
     except Exception as e:
         print(e)
 
+
 @router.get('/pme/')
 def buscar_pme_colegio():
     try:
-      
-      data = obtener_pme_colegio()
-      if data:
-          return data
+
+        data = obtener_pme_colegio()
+        if data:
+            return data
     except Exception as e:
-      print(e)
+        print(e)
