@@ -46,11 +46,11 @@ def listar_pme():
             }
         }, {
             '$project': {
-                "colegio.direccion":0,
-                "colegio.imagen":0,
-                "colegio.rut":0,
-                "colegio.telefono":0,
-                "colegio._id":0,
+                "colegio.direccion": 0,
+                "colegio.imagen": 0,
+                "colegio.rut": 0,
+                "colegio.telefono": 0,
+                "colegio._id": 0,
             }
         }])
 
@@ -84,7 +84,6 @@ def patch_pme(id: str, model: Schema_PME_Upedate):
         print(e)
 
 
-
 def acciones_pme(id: str):
     try:
         result = coleccion_pme.aggregate([{
@@ -108,9 +107,10 @@ def acciones_pme(id: str):
     except Exception as e:
         print(e)
 
-def actividades_del_colegio_x_accion(id:str):
+
+def actividades_del_colegio_x_accion(id: str):
     try:
-      result = coleccion_pme.aggregate([{
+        result = coleccion_pme.aggregate([{
             "$match": {
                 "_id": id
             }
@@ -119,13 +119,81 @@ def actividades_del_colegio_x_accion(id:str):
                 "from": "actividades",
                 "localField": "_id",
                 "foreignField": "id_pme",
-                "as": "sub_acciones_pme"
-            }
-        }, {
-            "$project": {
-                "_id": 0
+                "as": "actividades"
             }
         }])
-      return list(result)
+        return list(result)
     except Exception as e:
-      print(e)
+        print(e)
+
+
+
+#sin repo pero sirve de ejemplo
+def actividades_del_colegio_x_pme(id: str):
+    try:
+        result = coleccion_pme.aggregate([{
+            "$match": {
+                "_id": id
+            }
+        }, {
+            "$lookup": {
+                "from": "acciones",
+                "localField": "_id",
+                "foreignField": "id_pme",
+                "as": "acciones"
+            }
+        }, {
+            "$lookup": {
+                "from": "actividades",
+                "localField": "_id",
+                "foreignField": "id_pme",
+                "as": "detalles"
+            }
+        }, {
+            "$unwind": "$detalles"
+        }, {
+            "$group": {
+                "_id": "$acciones.nombre_accion",
+                "acciones": {
+                    "$push": "$acciones.nombre_accion"
+                },
+                "detalles": {
+                    "$push": "$detalles"
+                }
+            }
+        }])
+        return list(result)
+    except Exception as e:
+        print(e)
+
+
+"""
+https://www.mongodb.com/docs/manual/reference/operator/aggregation/lookup/
+result = coleccion_pme.aggregate([
+            {
+                "$match": {
+                    "_id": id
+                }
+            },
+            {
+                "$lookup": {
+                    "from": "acciones",
+                    "localField": "_id",
+                    "foreignField": "id_pme",
+                    "as": "acciones"
+                }
+            },
+            {
+                "$unwind": "$acciones"
+            },
+            {
+                "$replaceRoot": {
+                    "newRoot": {
+                        "$mergeObjects": [{
+                            "$arrayElemAt": ["$acciones", 0]
+                        }, "$$ROOT"]
+                    }
+                }
+            },{ "$project": { "fromItems": 0 } }
+                    ])
+"""

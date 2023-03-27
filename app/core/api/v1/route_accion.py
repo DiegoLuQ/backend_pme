@@ -2,14 +2,14 @@ from fastapi import APIRouter, HTTPException, status
 from core.schemas.Schema_acciones import Schema_Acciones, Schema_Acciones_Update
 from typing import List
 from fastapi.responses import JSONResponse
-from core.db.repo_acciones import (crear_accion, listar_acciones,
+from core.db.repo_acciones import (crear_accion, listar_acciones,listar_acciones_por_fecha,
                                    crear_acciones, get_actividades,
                                    patch_accion)
 from fastapi.encoders import jsonable_encoder
 from pathlib import Path
 import pandas as pd
 
-excel = Path('.') / 'pme.xlsx'
+excel = Path('.') / 'pme_2.xlsx'
 
 router = APIRouter()
 
@@ -36,11 +36,16 @@ def pme_excel():
 )
 def registrar_acciones_excel():
     try:
-        df = pd.read_excel(excel, sheet_name='prueba')
+        df = pd.read_excel(excel, sheet_name='pme_dp')
         data = df.to_dict('records')
+        print(data)
+        # data[0]["subdimensiones"] = data[0]["subdimensiones"].split(',')
+        # data[0]["planes"] = data[0]["planes"].split(',')
+
+        for x in range(len(data)):
+            data[x]["subdimensiones"] = data[x]["subdimensiones"].split(',')
         new_data = [jsonable_encoder(Schema_Acciones(**x)) for x in data]
         data = crear_acciones(new_data)
-        # print(new_data)
 
         if data:
             return JSONResponse(status_code=200,
@@ -78,6 +83,14 @@ def registrar_accion(model: Schema_Acciones):
 def listando_acciones():
     try:
         lista = listar_acciones()
+        return lista
+    except Exception as e:
+        print(e)
+
+@router.get('/update_acciones/')
+def listando_acciones_entre_fecha():
+    try:
+        lista = listar_acciones_por_fecha()
         return lista
     except Exception as e:
         print(e)

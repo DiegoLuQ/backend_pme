@@ -38,7 +38,6 @@ def mostrar_actividades():
         }, {
             "$project": {
                 "_id": 0,
-                
             }
         }])
 
@@ -71,5 +70,26 @@ def patch_actividad(id: str, model: Schema_Actividades_Update):
                 return True
             return False
         return False
+    except Exception as e:
+        print(e)
+
+
+def actividades_accion(id_pme: str):
+    try:
+        result = coleccion_actividades.aggregate([{
+            "$match": {
+                "id_pme": id_pme
+            }
+        }, {
+            "$lookup": {
+                "from": "acciones",
+                "localField": "id_accion",
+                "foreignField": "_id",
+                "as": "acciones"
+            }
+        }, {
+            "$unwind": "$acciones"
+        }])
+        return list(result)
     except Exception as e:
         print(e)

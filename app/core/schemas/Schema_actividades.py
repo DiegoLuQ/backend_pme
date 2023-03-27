@@ -22,7 +22,7 @@ class Schema_Actividades(BaseModel):
     id:PyObjectId = Field(default_factory=PyObjectId, alias="_id")
     nombre: str 
     detalle: str
-    detallt_lista: List[str]
+    detalle_lista: List[str]
     id_accion:str
     id_pme:str
     class Config:
@@ -33,7 +33,7 @@ class Schema_Actividades(BaseModel):
             'example':{
                 'nombre':'Grandes Eventos',
                 'detalle':'Eventos tales como: dia de la madre, del padre, dia del niño...',
-                'detallt_lista':["Dia del niño", "Fiesta Patrias", "Aniversario"],
+                'detalle_lista':["Dia del niño", "Fiesta Patrias", "Aniversario"],
                 'id_accion':'159966332211',
                 'id_pme':'640b3e57434fbf409d0dd85c'
             }

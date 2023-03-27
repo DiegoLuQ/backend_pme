@@ -1,8 +1,11 @@
 from pydantic import BaseModel, Field
 from bson import ObjectId
 from datetime import date, datetime
+from typing import List
+
 
 class PyObjectId(ObjectId):
+
     @classmethod
     def __get_validators__(cls):
         yield cls.validate
@@ -17,59 +20,92 @@ class PyObjectId(ObjectId):
     def __modify_schema__(cls, field_schema):
         field_schema.update(type="string")
 
+
 class Schema_Acciones(BaseModel):
-    id:PyObjectId = Field(default_factory=PyObjectId, alias="_id")
-    subdimension : str = None
-    n_de_accion	: int = None
-    nombre_accion : str = None
-    descripcion	: str = None
-    medio_verificacion : str = None	
-    responsable	: str = None
-    fecha_inicio : date = None
-    fecha_limite : date = None
-    recursos : str = None
-    monto : int = None
-    item : str = None
-    dimension : str = None
-    fecha_actualizacion= datetime.today()
-    id_pme : str = None
-    
+    id: PyObjectId = Field(default_factory=PyObjectId, alias="_id")
+    dimension: str = None
+    subdimensiones: List[str]
+    nombre_accion: str = None
+    descripcion: str = None
+    fecha_inicio: date = None
+    recursos_necesarios_ejecucion: str = None
+    fecha_termino: date = None
+    planes: str = None
+    monto_sep: int = None
+    monto_total: int = None
+    id_pme: str = None
+    fecha_actualizacion = datetime.today()
+    # medio_de_verificacion: str = None
+    # monto_subvencion_general: int = None
+    # objetivo_estrategico: str = None
+    # estrategia: str = None
+    # responsable: str = None
+    # programa_asociado: str = None
+    # ate: str = None
+    # tic: str = None
 
     class Config:
         allow_population_by_field_name = True
         arbitrary_types_allowed = True
         json_encoders = {ObjectId: str}
-        schema_extra ={
+        schema_extra = {
             "example": {
-                "subdimension" : "Liderazgo del sostenedor",
-                "n_de_accion" : 200,
-                "nombre_accion" : "Gestionar y controlar acciones  dadas,  orientadas al logro de los objetivos institucionales",
-                "descripcion" : "Es necesario contar con un area de Control de Gestion para realizar un acompañamiento efizaz para determinar los avances en las acciones de trabajo que estan orientadas al logro de los objetivos institucionales",
-                "medio_verificacion" : "Acta de reuniones - accountability semestral (anual)"	,
-                "responsable": "E.Gestión -Sostenedor",
-                "fecha_inicio": "2023-03-03",
-                "fecha_limite": "2023-03-30",
-                "recursos": "Equipo de gestión - directivos",
-                "monto": 500000,
-                "item": "Reuniones coordinación directiva",
-                "dimension": "Liderazgo",
-                "id_pme": "15963214",
+                "dimension":
+                "Gestión Pedagógica",
+                "objetivo_estrategico":
+                "Implementar la reflexión y análisis de prácticas y resultados en función de metas, a partir de un trabajo colaborativo que promuevan una cultura de equipo (por ejemplo con sesiones entre docentes para ver focos y hallazgos en observación de clases, reuniones entre especialistas PIE) de manera tal de promover el desarrollo profesional de cada integrante de la comunidad educativa.",
+                "estrategia":
+                "Colaboración entre docentes y capacitación/perfeccionamiento para incorporar herramientas digitales en propuestas de enseñanza y aprendizaje.",
+                "subdimensiones": [
+                    "Gestión Curricular", "Enseñanza y aprendizaje en el aula",
+                    "Apoyo al desarrollo de los estudiantes"
+                ],
+                "nombre_accion":
+                "refuerzo escolar",
+                "descripcion":
+                "Reforzamiento escolar a estudiantes , con la finalidad de mejorar los niveles de aprendizaje, asegurando los resultados y continuidad escolar",
+                "fecha_inicio":
+                "2022-03-14",
+                "fecha_termino":
+                "2022-11-30",
+                "programa_asociado":
+                "SEP",
+                "responsable":
+                "Jefe técnico",
+                "recursos_necesarios_ejecucion":
+                "Asignación de horas Asistentes de aula, horas docentes, resmas de papel, fotocopias, recursos de aprendizajes, útiles escolares, colaciones, material didáctico, impresora, tv o monitor de proyección",
+                "ate":
+                "No",
+                "tic":
+                "Sala de clases",
+                "planes": 
+                    "Plan de Gestión de la Convivencia Escolar, Plan de Apoyo a la Inclusión"
+                ,
+                "medio_de_verificacion":
+                "informe de evaluación de impacto, Planificación y registro de las actividades de reforzamiento,     Registro de asistencia a talleres de reforzamiento",
+                "monto_subvencion_general":
+                0,
+                "monto_sep":
+                10000000,
+                "monto_total":
+                1000000000,
+                "id_pme":
+                "id_pme",
             }
         }
 
 
 class Schema_Acciones_Update(BaseModel):
-    subdimension : str = None
-    n_de_accion	: int = None
-    nombre_accion : str = None
-    descripcion	: str = None
-    medio_verificacion : str = None
-    responsable	: str = None
-    fecha_inicio : str = None
-    fecha_limite : str = None
-    recursos : str = None
-    monto : int = None
-    item : str = None
-    dimension : str = None
+    dimension: str = None
+    subdimensiones: List[str] = None
+    nombre_accion: str = None
+    descripcion: str = None
+    fecha_inicio: str = None
+    fecha_termino: str = None
+    recursos_necesarios_ejecucion: str = None
+    planes: str = None
+    monto_sep: str = None
+    monto_total: str = None
+    id_pme: str = None
     fecha_actualizacion: datetime = None
-    id_pme : str = None
+    id_pme: str = None

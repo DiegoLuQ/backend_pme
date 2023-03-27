@@ -3,7 +3,9 @@ from core.schemas.Schema_PME import Schema_PME, Schema_PME_Upedate
 from fastapi.responses import JSONResponse
 from fastapi.encoders import jsonable_encoder
 from core.db.repo_pme import (listar_pme, buscar_pme_por_anio, eliminar_pme,
-                              patch_pme, registrar_pme, acciones_pme, actividades_del_colegio_x_accion)
+                              patch_pme, registrar_pme, acciones_pme,
+                              actividades_del_colegio_x_accion,
+                              actividades_del_colegio_x_pme)
 
 router = APIRouter()
 
@@ -21,13 +23,15 @@ def crear_pme(model: Schema_PME):
     except Exception as e:
         print(e)
 
+
 @router.get('/pme_colegio/{id_colegio}')
-def pme_x_colegio_id(id_colegio:str):
+def pme_x_colegio_id(id_colegio: str):
     try:
-      data = buscar_pme_por_anio(id_colegio)
-      return JSONResponse(status_code=status.HTTP_200_OK, content=data)
+        data = buscar_pme_por_anio(id_colegio)
+        return JSONResponse(status_code=status.HTTP_200_OK, content=data)
     except Exception as e:
-      print(e)
+        print(e)
+
 
 @router.get('/')
 def obtener_pmes():
@@ -76,18 +80,26 @@ def editar_pme(id: str, model: Schema_PME_Upedate):
 
 
 @router.get('/acciones/{id_pme}')
-def get_acciones_colegio(id_pme:str):
+def get_acciones_pme(id_pme: str):
     try:
-      
-      data = acciones_pme(id_pme)
-      return data
-    except Exception as e:
-      print(e)
 
-@router.get('/actividades/{id}')
-def get_subacciones_colegio(id:str):
-    try:
-      data = actividades_del_colegio_x_accion(id)
-      return data
+        data = acciones_pme(id_pme)
+        return data
     except Exception as e:
-      print(e)
+        print(e)
+
+@router.get('/actividades/{id_pme}')
+def get_actividades_pme(id: str):
+    try:
+        data = actividades_del_colegio_x_accion(id)
+        act_data = data[0]
+        lista_detalle = []
+        [
+            lista_detalle.extend(x["detallt_lista"])
+            for x in data[0]["actividades"]
+        ]
+
+        return act_data
+    except Exception as e:
+        print(e)
+

@@ -4,13 +4,13 @@ from fastapi.responses import JSONResponse
 from fastapi.encoders import jsonable_encoder
 from core.db.repo_actividades import (eliminar_actividad, mostrar_actividad,
                                        patch_actividad, registrar_actividad,
-                                       mostrar_actividades)
+                                       mostrar_actividades, actividades_accion)
 
 router = APIRouter()
 
 
 @router.post('/registrar')
-def registrar_accion_de_actividad(model: Schema_Actividades):
+def registrar_actividad_deaccion(model: Schema_Actividades):
     try:
         new_model = jsonable_encoder(model)
         data = registrar_actividad(new_model)
@@ -42,3 +42,11 @@ def mostrar_actividades_de_acciones():
             detail={"msg": "Hubo un error, comunicate con el administrador"})
     except Exception as e:
         print(e)
+
+@router.get('/actividad_de_acciones/{id_pme}')
+def obtener_actividades_de_acciones(id_pme:str):
+    try:
+      result =actividades_accion(id_pme)
+      return result
+    except Exception as e:
+      print(e)
