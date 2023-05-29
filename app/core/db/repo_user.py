@@ -1,6 +1,6 @@
 from core.config.db import coleccion_user
 
-def registar_usuario(model: dict) -> dict | bool:
+def registar_usuario(model: dict):
     try:
 
         data = coleccion_user.insert_one(model)
