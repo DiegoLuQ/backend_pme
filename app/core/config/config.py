@@ -9,7 +9,7 @@ class Settings:
     SECRET_KEY = os.environ.get('SECRET_KEY')
     DB_MONGO = os.environ.get('DB_MONGO2')
     RUTA_CLUSTER=os.environ.get('RUTA_CLUSTER')
-    ACCESS_TOKEN_EXPIRE_MINUTES = 60
+    ACCESS_TOKEN_EXPIRE_MINUTES = 180
     ALGORITHM = os.environ.get('ALGORITHM')
     ORIGINS_MAIN = os.environ.get('ORIGINS_MAIN')
 
