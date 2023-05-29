@@ -1,6 +1,15 @@
 from pymongo import MongoClient
-from .config import settings
+from core.config.config import settings
 
-client = MongoClient(settings.RUTA_MONGO)
+client = MongoClient(settings.RUTA_CLUSTER)
 
-db = client.db_colegio
+db = settings.DB_MONGO
+
+coleccion_colegio = client[f'{db}'].colegios
+coleccion_accion = client[f'{db}'].acciones
+coleccion_actividades = client[f'{db}'].actividades
+coleccion_pme = client[f'{db}'].pme
+coleccion_presupuesto_colegio = client[f'{db}'].presupuesto_colegio
+coleccion_presupuesto = client[f'{db}'].presupuesto
+coleccion_recursos = client[f'{db}'].recursos
+coleccion_user = client[f'{db}'].user

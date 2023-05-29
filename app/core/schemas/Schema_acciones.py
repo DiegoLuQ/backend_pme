@@ -2,6 +2,7 @@ from pydantic import BaseModel, Field
 from bson import ObjectId
 from datetime import date, datetime
 from typing import List
+import uuid
 
 
 class PyObjectId(ObjectId):
@@ -23,26 +24,24 @@ class PyObjectId(ObjectId):
 
 class Schema_Acciones(BaseModel):
     id: PyObjectId = Field(default_factory=PyObjectId, alias="_id")
+    uuid_accion: str
     dimension: str = None
     subdimensiones: List[str]
+    objetivo_estrategico: str
+    estrategia: str = None
     nombre_accion: str = None
     descripcion: str = None
+    responsable: str = None
+    tic: str = None
     fecha_inicio: date = None
-    recursos_necesarios_ejecucion: str = None
     fecha_termino: date = None
+    recursos_necesarios_ejecucion: str = None
+    medios_verificacion: str = None
     planes: str = None
     monto_sep: int = None
     monto_total: int = None
     id_pme: str = None
     fecha_actualizacion = datetime.today()
-    # medio_de_verificacion: str = None
-    # monto_subvencion_general: int = None
-    # objetivo_estrategico: str = None
-    # estrategia: str = None
-    # responsable: str = None
-    # programa_asociado: str = None
-    # ate: str = None
-    # tic: str = None
 
     class Config:
         allow_population_by_field_name = True
@@ -72,15 +71,16 @@ class Schema_Acciones(BaseModel):
                 "SEP",
                 "responsable":
                 "Jefe técnico",
+                "medios_verificacion":
+                "",
                 "recursos_necesarios_ejecucion":
                 "Asignación de horas Asistentes de aula, horas docentes, resmas de papel, fotocopias, recursos de aprendizajes, útiles escolares, colaciones, material didáctico, impresora, tv o monitor de proyección",
                 "ate":
                 "No",
                 "tic":
                 "Sala de clases",
-                "planes": 
-                    "Plan de Gestión de la Convivencia Escolar, Plan de Apoyo a la Inclusión"
-                ,
+                "planes":
+                "Plan de Gestión de la Convivencia Escolar, Plan de Apoyo a la Inclusión",
                 "medio_de_verificacion":
                 "informe de evaluación de impacto, Planificación y registro de las actividades de reforzamiento,     Registro de asistencia a talleres de reforzamiento",
                 "monto_subvencion_general":
@@ -90,7 +90,7 @@ class Schema_Acciones(BaseModel):
                 "monto_total":
                 1000000000,
                 "id_pme":
-                "id_pme",
+                "id_pme"
             }
         }
 
@@ -99,13 +99,17 @@ class Schema_Acciones_Update(BaseModel):
     dimension: str = None
     subdimensiones: List[str] = None
     nombre_accion: str = None
+    objetivo_estrategico: str = None
+    estrategia: str = None
+    responsable: str = None
     descripcion: str = None
+    tic: str = None
+    medios_verificacion: str = None
     fecha_inicio: str = None
     fecha_termino: str = None
     recursos_necesarios_ejecucion: str = None
     planes: str = None
     monto_sep: str = None
     monto_total: str = None
-    id_pme: str = None
     fecha_actualizacion: datetime = None
     id_pme: str = None

@@ -1,7 +1,6 @@
-from core.config.db import db
+from core.config.db import coleccion_actividades
 from core.schemas.Schema_actividades import Schema_Actividades, Schema_Actividades_Update
 
-coleccion_actividades = db.actividades
 
 
 def registrar_actividad(model: dict):
@@ -83,8 +82,8 @@ def actividades_accion(id_pme: str):
         }, {
             "$lookup": {
                 "from": "acciones",
-                "localField": "id_accion",
-                "foreignField": "_id",
+                "localField": "uuid_accion",
+                "foreignField": "uuid_accion",
                 "as": "acciones"
             }
         }, {

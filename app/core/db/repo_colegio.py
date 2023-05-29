@@ -1,7 +1,5 @@
-from core.config.db import db
 from core.schemas.Schema_colegio import SchemaColegio, SchemaColegioUpdate
-
-coleccion_colegio = db.colegios
+from core.config.db import coleccion_colegio
 
 
 def registrar_colegio(model: dict):
@@ -25,6 +23,18 @@ def registrar_colegio(model: dict):
 def buscar_colegio(nombre: str):
     try:
         data = coleccion_colegio.find_one({"nombre": nombre})
+
+        if data is None:
+            return False
+        if data:
+            return data
+        return False
+    except Exception as e:
+        print(e)
+    
+def buscar_colegio_id(id_colegio: str):
+    try:
+        data = coleccion_colegio.find_one({"_id": id_colegio})
 
         if data is None:
             return False

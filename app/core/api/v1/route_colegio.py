@@ -5,7 +5,8 @@ from fastapi.encoders import jsonable_encoder
 from core.schemas.Schema_colegio import SchemaColegio, SchemaColegioUpdate
 from core.db.repo_colegio import (buscar_colegio, eliminar_colegio,
                                   patch_colegio, registrar_colegio,
-                                  mostrar_colegios, obtener_pme_colegio)
+                                  mostrar_colegios, obtener_pme_colegio,
+                                  buscar_colegio_id)
 
 router = APIRouter()
 
@@ -51,6 +52,21 @@ def obtener_colegio(nombre: str):
     try:
         nombre = nombre.title()
         data = buscar_colegio(nombre)
+        if data is False:
+            return JSONResponse(status_code=status.HTTP_404_NOT_FOUND,
+                                content={"msg": "Colegio no encontrado"})
+        if data:
+            return JSONResponse(status_code=status.HTTP_200_OK,
+                                content={"data": data})
+    except ValidationError:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail={"msg": "Colegio no encontrado"})
+
+
+@router.get('/buscar/')
+def obtener_colegio_id(id_colegio: str):
+    try:
+        data = buscar_colegio_id(id_colegio)
         if data is False:
             return JSONResponse(status_code=status.HTTP_404_NOT_FOUND,
                                 content={"msg": "Colegio no encontrado"})

@@ -1,7 +1,5 @@
-from core.config.db import db
+from core.config.db import coleccion_accion
 from core.schemas.Schema_acciones import Schema_Acciones_Update
-
-coleccion_accion = db.acciones
 from datetime import datetime, date
 import datetime as dt
 
@@ -22,10 +20,25 @@ def crear_acciones(lista_de_acciones_excel: list):
     except Exception as e:
         print(e)
 
-
-def listar_acciones():
+def crear_acciones_anio_anterior(data:list):
     try:
-        data = [x for x in coleccion_accion.find()]
+      coleccion_accion.insert_many(data)
+      return True
+    except Exception as e:
+      print(e)
+
+def listar_acciones(id_pme:str):
+    try:
+        data = [x for x in coleccion_accion.find({"id_pme":id_pme})]
+        if data:
+            return data
+        return False
+    except Exception as e:
+        print(e)
+
+def listar_acciones_id_pme(id_pme):
+    try:
+        data = [x for x in coleccion_accion.find({'id_pme':id_pme}, {'_id':0})]
         if data:
             return data
         return False
@@ -37,7 +50,7 @@ def listar_acciones_por_fecha():
     try:
         fecha_desde = datetime.today() - dt.timedelta(days=15)
         fecha_hasta = datetime.today() + dt.timedelta(days=61)
-        print(fecha_desde, fecha_hasta)
+        # print(fecha_desde, fecha_hasta)
         filtro = coleccion_accion.find({
             "fecha_actualizacion": {
                 "$gte": fecha_desde,
@@ -68,17 +81,17 @@ def patch_accion(id: str, model: Schema_Acciones_Update):
         print(e)
 
 
-def get_actividades(id: str):
+def get_actividades(uuid_accion: str):
     try:
         result = coleccion_accion.aggregate([{
             "$match": {
-                "_id": id
+                "uuid_accion": uuid_accion
             }
         }, {
             "$lookup": {
-                "from": "actividades",
-                "localField": "_id",
-                "foreignField": "id_accion",
+                "from": "recursos",
+                "localField": "uuid_accion",
+                "foreignField": "uuid_accion",
                 "as": "actividades"
             }
         }, {
@@ -90,3 +103,12 @@ def get_actividades(id: str):
         return list(result)
     except Exception as e:
         print(e)
+
+
+def delete_acciones(id_pme:str):
+    try:
+      if id_pme:
+          coleccion_accion.delete_many({'id_pme':id_pme})
+          return True
+    except Exception as e:
+      print(e)

@@ -3,10 +3,11 @@ from fastapi.responses import JSONResponse
 from core.api.base import router as router_base
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
+from core.config.config import settings
 app = FastAPI()
 
 app.include_router(router_base)
-origins = ["*"]
+origins = ['*']
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
@@ -14,6 +15,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
 @app.exception_handler(RequestValidationError)
 async def validation_exception_handler(request: Request, exc: RequestValidationError):
     return JSONResponse(

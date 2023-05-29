@@ -31,6 +31,5 @@ class Schema_Presupuesto(BaseModel):
                 "year":2022,
                 "observacion":"Alfileres",                
                 "id_colegio":"id_colegio"
-                
             }
         }

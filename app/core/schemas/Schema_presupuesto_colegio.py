@@ -26,6 +26,9 @@ class Schema_Presupuesto_Colegio(BaseModel):
     mes_compra:str
     motivo_actividad:str
     id_presupuesto: str
+    valor_neto:int
+    con_iva:float
+    total:float
     class Config:
         allow_population_by_field_name = True
         arbitrary_types_allowed = True
@@ -39,6 +42,9 @@ class Schema_Presupuesto_Colegio(BaseModel):
                 "presentacion":"Paquetes",
                 "mes_compra":"marzo",
                 "motivo_actividad":"insumos oficina",
-                "id_presupuesto":"id_presupuesto"                
+                "id_presupuesto":"id_presupuesto",
+                "valor_neto":0,
+                "con_iva":0,
+                "total":0                
             }
         }

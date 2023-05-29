@@ -1,7 +1,6 @@
 from core.schemas.Schema_presupuesto import Schema_Presupuesto
-from core.config.db import db
+from core.config.db import coleccion_presupuesto_colegio
 
-coleccion_presupuesto_colegio = db.presupuesto_colegio
 
 
 def insertar_presupuesto(listado_presupuesto: dict):

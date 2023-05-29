@@ -1,8 +1,15 @@
-from core.config.db import db
+from core.config.db import coleccion_pme
 from core.schemas.Schema_PME import Schema_PME, Schema_PME_Upedate
 
-coleccion_pme = db.pme
 
+def verificar_pme(id_pme):
+    try:
+      verify = coleccion_pme.find_one({'_id':id_pme})
+      if verify:
+          return True
+      return False
+    except Exception as e:
+      print(e)
 
 def registrar_pme(model: dict):
     try:
@@ -10,7 +17,6 @@ def registrar_pme(model: dict):
             'id_colegio': model["id_colegio"],
             'year': model['year']
         })
-        print(data)
         if data:
             return False
         data = coleccion_pme.insert_one(model)

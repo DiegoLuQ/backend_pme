@@ -17,11 +17,11 @@ def crear_pme(model: Schema_PME):
         data = registrar_pme(new_model)
         if data:
             return JSONResponse(status_code=status.HTTP_201_CREATED,
-                                content={'data': data})
-        return JSONResponse(status_code=status.HTTP_409_CONFLICT,
-                            content={"msg": "PME ya esta registrado"})
+                                content={'msg':'PME se registro correctamente','data': data})
+        return JSONResponse(status_code=status.HTTP_409_CONFLICT, content={"msg":"PME ya existe"})
     except Exception as e:
         print(e)
+
 
 
 @router.get('/pme_colegio/{id_colegio}')
@@ -89,15 +89,12 @@ def get_acciones_pme(id_pme: str):
         print(e)
 
 @router.get('/actividades/{id_pme}')
-def get_actividades_pme(id: str):
+def get_actividades_pme(id_pme: str):
     try:
-        data = actividades_del_colegio_x_accion(id)
+        data = actividades_del_colegio_x_accion(id_pme)
         act_data = data[0]
-        lista_detalle = []
-        [
-            lista_detalle.extend(x["detallt_lista"])
-            for x in data[0]["actividades"]
-        ]
+        # lista_detalle = []
+        # [lista_detalle.extend(x["detallt_lista"])for x in data[0]["actividades"]]
 
         return act_data
     except Exception as e:
