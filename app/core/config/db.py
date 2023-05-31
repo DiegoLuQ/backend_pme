@@ -4,7 +4,6 @@ from core.config.config import settings
 client = MongoClient(settings.RUTA_CLUSTER)
 
 db = settings.DB_MONGO
-
 coleccion_colegio = client[f'{db}'].colegios
 coleccion_accion = client[f'{db}'].acciones
 coleccion_actividades = client[f'{db}'].actividades
