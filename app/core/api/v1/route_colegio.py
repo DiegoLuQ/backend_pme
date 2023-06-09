@@ -63,7 +63,7 @@ def obtener_colegio(nombre: str):
                             detail={"msg": "Colegio no encontrado"})
 
 
-@router.get('/buscar/')
+@router.get('/buscar/{id_colegio}')
 def obtener_colegio_id(id_colegio: str):
     try:
         data = buscar_colegio_id(id_colegio)
@@ -72,11 +72,10 @@ def obtener_colegio_id(id_colegio: str):
                                 content={"msg": "Colegio no encontrado"})
         if data:
             return JSONResponse(status_code=status.HTTP_200_OK,
-                                content={"data": data})
+                                content={"data":[data]})
     except ValidationError:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail={"msg": "Colegio no encontrado"})
-
 
 @router.patch('/modificar/{id}')
 def modificar_colegio(model: SchemaColegioUpdate, id: str):

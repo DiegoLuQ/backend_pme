@@ -1,6 +1,7 @@
 from core.schemas.Schema_recursos import Schema_Recursos, Schema_Recursos_Update
 from core.config.db import coleccion_recursos
 
+
 def registrar_recurso(model: dict):
     try:
         data = coleccion_recursos.insert_one(model)
@@ -23,11 +24,11 @@ def registrar_actividades(lista_actividades_pme_interno: list):
         print(e)
 
 
-def obtener_recursos(id):
+def obtener_recursos(id_pme):
     try:
         result = coleccion_recursos.aggregate([{
             "$match": {
-                "id_pme": id
+                "id_pme": id_pme
             }
         }, {
             "$lookup": {
@@ -49,6 +50,24 @@ def obtener_recursos(id):
             }
         }])
         return list(result)
+    except Exception as e:
+        print(e)
+
+
+def obtener_actividades_por_pme(id_pme):
+    try:
+        result = coleccion_recursos.find({'id_pme': id_pme}, {
+            'uuid_accion': 0,
+            '_id': 0,
+            'id_pme': 0,
+            'fecha': 0,
+            'monto': 0
+        })
+
+        data = [{
+            **x, "recursos_actividad": ", ".join(x['recursos_actividad'])
+        } for x in result]
+        return data
     except Exception as e:
         print(e)
 
@@ -113,5 +132,17 @@ def eliminar_actividades_many(id_pme: str):
             return True
         return False
 
+    except Exception as e:
+        print(e)
+
+
+def obtener_actividad(id_actividad: str) -> dict:
+    try:
+        print(id_actividad)
+        data =  coleccion_recursos.find_one({"_id":id_actividad})
+        if data:
+            return data
+        else:
+            return False
     except Exception as e:
         print(e)

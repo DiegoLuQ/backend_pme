@@ -1,6 +1,6 @@
 from pydantic import BaseModel, Field
 from bson import ObjectId
-
+from typing import List
 class PyObjectId(ObjectId):
 
     @classmethod
@@ -26,10 +26,11 @@ class Schema_User(BaseModel):
     apellido: str
     correo: str
     perfil: str
-    active = False
     is_superuser = False
-    id_colegio: str
-
+    id_colegio: List[str]
+    cargo:str
+    area:str
+    subareas: List[str] # esto servira para agregar a los combobox del frontend y rellenar la opcion de areas en el requerimiento
     class Config:
         allow_population_by_field_name = True
         arbitrary_types_allowed = True
@@ -41,7 +42,10 @@ class Schema_User(BaseModel):
                 "correo":"info@gmail.com",
                 "contraseña":"123456",
                 "perfil":"usuario",
-                "id_colegio":""
+                "id_colegio":"",
+                "cargo":"asistente",
+                "area":"gestion y control",
+                "subareas":["",""]
             }
         }
 
@@ -51,8 +55,10 @@ class Schema_User_Update(BaseModel):
     correo: str = None
     perfil: str = None
     estado = False
-    id_colegio: str = None
-
+    id_colegio: List[str] = None
+    cargo:str = None
+    area:str = None
+    subareas: List[str]
 
 class ShowLogin(BaseModel):
     username:str

@@ -104,7 +104,10 @@ def authenticate(loginitem: ShowLogin):
         "sub": user["correo"],
         "admin": user["is_superuser"], 
         "usuario": user["nombre"] + ' ' + user["apellido"],
-        "id_colegio": user["id_colegio"]
+        "id_colegio": user["id_colegio"],
+        "cargo":user["cargo"],
+        "area":user["area"],
+        "subareas":user["subareas"]
     },
                                        expires_delta=access_token_expire)
     return {

@@ -4,12 +4,13 @@ from core.schemas.Schema_PME import Schema_PME, Schema_PME_Upedate
 
 def verificar_pme(id_pme):
     try:
-      verify = coleccion_pme.find_one({'_id':id_pme})
-      if verify:
-          return True
-      return False
+        verify = coleccion_pme.find_one({'_id': id_pme})
+        if verify:
+            return True
+        return False
     except Exception as e:
-      print(e)
+        print(e)
+
 
 def registrar_pme(model: dict):
     try:
@@ -30,11 +31,23 @@ def registrar_pme(model: dict):
 
 def buscar_pme_por_anio(id_colegio: str):
     try:
-        data = [x for x in coleccion_pme.find({'id_colegio': id_colegio})]
+        pipeline = [{
+            "$match": {
+                "id_colegio": id_colegio
+            }
+        }, {
+            "$lookup": {
+                "from": "colegios",
+                "localField": "id_colegio",
+                "foreignField": "_id",
+                "as": "colegio"
+            }
+        }]
+        data = coleccion_pme.aggregate(pipeline)
         if data is None:
             return None
         if data:
-            return data
+            return list(data)
         return False
     except Exception as e:
         print(e)
@@ -131,7 +144,6 @@ def actividades_del_colegio_x_accion(id: str):
         return list(result)
     except Exception as e:
         print(e)
-
 
 
 #sin repo pero sirve de ejemplo

@@ -1,13 +1,15 @@
 from fastapi import APIRouter, status, HTTPException
+from datetime import datetime
 from fastapi.encoders import jsonable_encoder
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, FileResponse
 from pathlib import Path
 import pandas as pd
 from core.schemas.Schema_recursos import Schema_Recursos, Schema_Recursos_Update
 from core.db.repo_recursos import (registrar_recurso, obtener_recursos,
                                    obtener_recursos_de_actividad,
                                    modificar_recurso, registrar_actividades,
-                                   eliminar_actividades_many)
+                                   eliminar_actividades_many,
+                                   obtener_actividades_por_pme, obtener_actividad)
 
 router = APIRouter()
 
@@ -33,7 +35,7 @@ def add_recurso(model: Schema_Recursos):
 
 
 @router.post('/registrar_actividades/{hoja}')
-def add_actividades(hoja:str):
+def add_actividades(hoja: str):
     try:
         df = pd.read_excel(excel, sheet_name=hoja)
         data = df.to_dict('records')
@@ -53,6 +55,20 @@ def add_actividades(hoja:str):
                                 "msg": "Actividades no registradas",
                                 "data": []
                             })
+    except Exception as e:
+        print(e)
+
+
+@router.get('/descargar/pme/{id_pme}')
+def descargar_actividad_pme(id_pme: str):
+    try:
+        data = obtener_actividades_por_pme(id_pme=id_pme)
+        df = pd.DataFrame(data)
+        now = datetime.now()
+        timestamp = str(now.timestamp())
+        excel_file = './temp/' + timestamp + 'actividades.xlsx'
+        df.to_excel(excel_file, index=False)
+        return FileResponse(excel_file, filename=excel_file)
     except Exception as e:
         print(e)
 
@@ -78,6 +94,7 @@ def get_recursos_de_actividad(uuid_accion: str):
 @router.patch('/modificar_recurso/{id}')
 def patch_recurso(id: str, model: Schema_Recursos_Update):
     try:
+        model.fecha = str(datetime.now())
         # return {"id":id, "model":model, "status":200}
         dato_recurso = modificar_recurso(model, id)
         if dato_recurso:
@@ -102,3 +119,14 @@ def eliminar_actividades(id_pme: str):
 
     except Exception as e:
         print(e)
+
+
+@router.get('/buscar/actividad/{id_actividad}')
+def get_actividad(id_actividad:str):
+    try:
+      data = obtener_actividad(id_actividad)
+      if data:
+          return JSONResponse(status_code=200, content={"msg":"Actividad", "data":data})
+      return JSONResponse(status_code=400, content={"msg":"No se encontró la actividad", "data":data})
+    except Exception as e:
+      print(e)
