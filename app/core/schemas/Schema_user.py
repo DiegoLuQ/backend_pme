@@ -42,7 +42,7 @@ class Schema_User(BaseModel):
                 "correo":"info@gmail.com",
                 "contraseña":"123456",
                 "perfil":"usuario",
-                "id_colegio":"",
+                "id_colegio":["646e39ec2f1a488a13373df2", "646e3a392f1a488a13373df4"],
                 "cargo":"asistente",
                 "area":"gestion y control",
                 "subareas":["",""]
