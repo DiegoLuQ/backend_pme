@@ -9,6 +9,7 @@ from .route_recurso import router as router_recurso
 from .route_user import router as router_user
 from .route_login import router as router_login
 from .route_requerimiento import router as router_requerimiento
+from .route_busqueda import router as router_busqueda
 router = APIRouter()
 
 router.include_router(router_user, prefix='/user', tags=["Usuarios"])
@@ -21,4 +22,5 @@ router.include_router(router_recurso, prefix='/recursos', tags=["Recursos de Act
 router.include_router(router_presupuesto, prefix='/presupuesto', tags=["Presupuesto"])
 router.include_router(router_presupuesto_colegio, prefix='/lista_presupuesto', tags=["Lista Presupuesto"])
 router.include_router(router_requerimiento, prefix='/requerimiento', tags=["Requerimiento"])
+router.include_router(router_busqueda, prefix='/busqueda', tags=["Datos de Busqueda"])
 

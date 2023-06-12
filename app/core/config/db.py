@@ -13,3 +13,4 @@ coleccion_presupuesto = client[f'{db}'].presupuesto
 coleccion_recursos = client[f'{db}'].recursos
 coleccion_user = client[f'{db}'].user
 colecion_requerimiento = client[f'{db}'].requerimiento
+coleccion_busqueda = client[f'{db}'].busqueda_recurso
