@@ -14,7 +14,7 @@ def post_requerimiento(model: dict) -> dict:
 
 def get_requerimiento(codigo_req: str) -> dict:
     try:
-        data = colecion_requerimiento.find_one({'codigo_req': codigo_req})
+        data = colecion_requerimiento.find_one({'codigo_req': codigo_req}, {'_id':0})
         if data:
             return data
         return False
@@ -22,9 +22,9 @@ def get_requerimiento(codigo_req: str) -> dict:
         print(e)
 
 
-def get_requerimientos() -> list:
+def get_requerimientos(area:str) -> list:
     try:
-        data = [x for x in colecion_requerimiento.find()]
+        data = [x for x in colecion_requerimiento.find({"area":area})]
         if len(data) > 0:
             return data
         return False
