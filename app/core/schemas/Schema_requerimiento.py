@@ -25,7 +25,7 @@ class Accion(BaseModel):
 class Info(BaseModel):
     req_para:str
     req_tipo:str
-
+    req_numero:str
 class ItemRequerimiento(BaseModel):
     cantidad:int
     descripcion:str

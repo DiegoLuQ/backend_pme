@@ -57,7 +57,6 @@ def obtener_recursos(id_pme):
 def obtener_actividades_por_pme(id_pme):
     try:
         result = coleccion_recursos.find({'id_pme': id_pme}, {
-            'uuid_accion': 0,
             '_id': 0,
             'id_pme': 0,
             'fecha': 0,

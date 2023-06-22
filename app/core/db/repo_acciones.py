@@ -36,6 +36,15 @@ def listar_acciones(id_pme:str):
     except Exception as e:
         print(e)
 
+def listar_acciones_user(id_pme:str):
+    try:
+        data = [x for x in coleccion_accion.find({"id_pme":id_pme},{"monto_sep":0, "monto_total":0, "_id":0, "id_pme":0})]
+        if data:
+            return data
+        return False
+    except Exception as e:
+        print(e)
+
 def listar_acciones_id_pme(id_pme):
     try:
         data = [x for x in coleccion_accion.find({'id_pme':id_pme}, {'_id':0})]
@@ -81,11 +90,12 @@ def patch_accion(id: str, model: Schema_Acciones_Update):
         print(e)
 
 
-def get_actividades(uuid_accion: str):
+def get_actividades(uuid_accion: str, id_pme:str):
     try:
         result = coleccion_accion.aggregate([{
             "$match": {
-                "uuid_accion": uuid_accion
+                "uuid_accion": uuid_accion,
+                "id_pme":id_pme
             }
         }, {
             "$lookup": {

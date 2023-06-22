@@ -4,7 +4,7 @@ from typing import List
 from fastapi.responses import JSONResponse, FileResponse
 from core.db.repo_acciones import (crear_accion, listar_acciones, listar_acciones_id_pme,listar_acciones_por_fecha,
                                    crear_acciones, get_actividades,
-                                   patch_accion, crear_acciones_anio_anterior, delete_acciones)
+                                   patch_accion, crear_acciones_anio_anterior, delete_acciones, listar_acciones_user)
 from core.db.repo_pme import acciones_pme
 from fastapi.encoders import jsonable_encoder
 from core.db.repo_pme import verificar_pme
@@ -47,11 +47,25 @@ def pme_excel():
     except Exception as e:
         print(e)
 
-@router.get('/descargar/pme/{id_pme}')
-def descargar_pme(id_pme:str):
+@router.get('/descargar/pme/admin/{id_pme}')
+def descargar_pme_admin(id_pme:str):
     now = datetime
     try:
         data = listar_acciones(id_pme)
+        df = pd.DataFrame(data)
+        now = datetime.now()
+        timestamp = str(now.timestamp())
+        excel_file = timestamp + 'pme.xlsx'
+        df.to_excel(excel_file, index=False)
+        return FileResponse(excel_file, filename=excel_file)
+    except Exception as e:
+      print(e)
+    
+@router.get('/descargar/pme/user/{id_pme}')
+def descargar_pme_user(id_pme:str):
+    now = datetime
+    try:
+        data = listar_acciones_user(id_pme)
         df = pd.DataFrame(data)
         now = datetime.now()
         timestamp = str(now.timestamp())
@@ -79,9 +93,9 @@ def listando_acciones_entre_fecha():
 
 
 @router.get('/actividades/')
-def obtener_activiades_x_accion(uuid_accion: str):
+def obtener_activiades_x_accion(uuid_accion: str, id_pme:str):
     try:
-        data = get_actividades(uuid_accion)
+        data = get_actividades(uuid_accion, id_pme)
         if data:
             return data
     except Exception as e:

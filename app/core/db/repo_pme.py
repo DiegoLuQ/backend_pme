@@ -118,7 +118,10 @@ def acciones_pme(id: str):
             }
         }, {
             "$project": {
-                "_id": 0
+                "_id": 0,
+                "acciones_pme.monto_sep":0,
+                "acciones_pme.monto_total":0,
+                
             }
         }])
         # print(list(result))
