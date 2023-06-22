@@ -1,9 +1,10 @@
 from fastapi import APIRouter, status, HTTPException
 from datetime import datetime
 from fastapi.encoders import jsonable_encoder
-from fastapi.responses import JSONResponse, FileResponse
+from fastapi.responses import JSONResponse, FileResponse, StreamingResponse
 from pathlib import Path
 import pandas as pd
+from io import BytesIO
 from core.schemas.Schema_recursos import Schema_Recursos, Schema_Recursos_Update
 from core.db.repo_recursos import (registrar_recurso, obtener_recursos,
                                    obtener_recursos_de_actividad,
@@ -64,11 +65,18 @@ def descargar_actividad_pme(id_pme: str):
     try:
         data = obtener_actividades_por_pme(id_pme=id_pme)
         df = pd.DataFrame(data)
-        now = datetime.now()
-        timestamp = str(now.timestamp())
-        excel_file = './temp/' + timestamp + 'actividades.xlsx'
+        
+        # Crear un objeto BytesIO en lugar de guardar el archivo en disco
+        excel_file = BytesIO()
         df.to_excel(excel_file, index=False)
-        return FileResponse(excel_file, filename=excel_file)
+        excel_file.seek(0)  # Asegurarse de que el puntero esté al principio del archivo
+        
+        # Configurar la respuesta HTTP para descargar el archivo
+        return StreamingResponse(
+            iter([excel_file.getvalue()]),
+            media_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            headers={'Content-Disposition': 'attachment;filename=actividades.xlsx'}
+        )
     except Exception as e:
         print(e)
 

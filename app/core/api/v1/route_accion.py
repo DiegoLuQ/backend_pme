@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, status
 from core.schemas.Schema_acciones import Schema_Acciones, Schema_Acciones_Update
 from typing import List
-from fastapi.responses import JSONResponse, FileResponse
+from fastapi.responses import JSONResponse, FileResponse, StreamingResponse
 from core.db.repo_acciones import (crear_accion, listar_acciones, listar_acciones_id_pme,listar_acciones_por_fecha,
                                    crear_acciones, get_actividades,
                                    patch_accion, crear_acciones_anio_anterior, delete_acciones, listar_acciones_user)
@@ -12,7 +12,7 @@ from pathlib import Path
 import pandas as pd
 from core.helpers.id_random import num_random
 from datetime import date, timedelta, datetime
-
+from io import BytesIO
 excel = Path('.') / 'pme_2.xlsx'
 
 router = APIRouter()
@@ -53,11 +53,17 @@ def descargar_pme_admin(id_pme:str):
     try:
         data = listar_acciones(id_pme)
         df = pd.DataFrame(data)
-        now = datetime.now()
-        timestamp = str(now.timestamp())
-        excel_file = timestamp + 'pme.xlsx'
+        # Crear un objeto BytesIO en lugar de guardar el archivo en disco
+        excel_file = BytesIO()
         df.to_excel(excel_file, index=False)
-        return FileResponse(excel_file, filename=excel_file)
+        excel_file.seek(0)  # Asegurarse de que el puntero esté al principio del archivo
+        
+        # Configurar la respuesta HTTP para descargar el archivo
+        return StreamingResponse(
+            iter([excel_file.getvalue()]),
+            media_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            headers={'Content-Disposition': 'attachment;filename=accionesPME.xlsx'}
+        )
     except Exception as e:
       print(e)
     
@@ -67,11 +73,17 @@ def descargar_pme_user(id_pme:str):
     try:
         data = listar_acciones_user(id_pme)
         df = pd.DataFrame(data)
-        now = datetime.now()
-        timestamp = str(now.timestamp())
-        excel_file = timestamp + 'pme.xlsx'
+        # Crear un objeto BytesIO en lugar de guardar el archivo en disco
+        excel_file = BytesIO()
         df.to_excel(excel_file, index=False)
-        return FileResponse(excel_file, filename=excel_file)
+        excel_file.seek(0)  # Asegurarse de que el puntero esté al principio del archivo
+        
+        # Configurar la respuesta HTTP para descargar el archivo
+        return StreamingResponse(
+            iter([excel_file.getvalue()]),
+            media_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            headers={'Content-Disposition': 'attachment;filename=accionesPME.xlsx'}
+        )
     except Exception as e:
       print(e)
 
@@ -173,8 +185,6 @@ def copiar_acciones_del_anio_anterior(id_pme:str, new_id_pme:str):
             return JSONResponse(status_code=400, content={"msg":"Los PME son iguales"})
         
         compronando_acciones_de_pme = acciones_pme(new_id_pme)
-        print(new_id_pme)
-        print(compronando_acciones_de_pme)
         if len(compronando_acciones_de_pme) > 1:
             return JSONResponse(status_code=status.HTTP_400_BAD_REQUEST, content={"msg":"PME ya tiene acciones registradas"})
         new_pme = verificar_pme(new_id_pme)

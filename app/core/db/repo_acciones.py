@@ -106,7 +106,10 @@ def get_actividades(uuid_accion: str, id_pme:str):
             }
         }, {
             "$project": {
-                "_id": 0
+                "monto_sep":0,
+                "monto_total":0,
+                "_id": 0,
+                "actividades.monto":0
             }
         }])
 

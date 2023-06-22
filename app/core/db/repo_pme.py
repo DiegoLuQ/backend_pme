@@ -134,7 +134,7 @@ def actividades_del_colegio_x_accion(id: str):
     try:
         result = coleccion_pme.aggregate([{
             "$match": {
-                "_id": id
+                "_id": id   
             }
         }, {
             "$lookup": {
