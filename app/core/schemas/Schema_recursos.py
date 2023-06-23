@@ -23,19 +23,19 @@ class PyObjectId(ObjectId):
 
 class Schema_Recursos(BaseModel):
     id: PyObjectId = Field(default_factory=PyObjectId, alias='_id')
-    id_pme: str
-    uuid_accion: str
+    id_pme: str = None
+    uuid_accion: str = None
 
-    dimension: str
-    subdimension: str
-    nombre_actividad: str
-    descripcion_actividad: str
-    medios_ver: str
-    responsable: str
+    dimension: str = None
+    subdimension: str = None
+    nombre_actividad: str = None
+    descripcion_actividad: str = None
+    medios_ver: str = None
+    responsable: str = None
     recursos_actividad: List[str]
-    monto: int
-
-    fecha = datetime.today()
+    monto: int = None
+    year:int = None
+    fecha : datetime = None
 
     class Config:
         allow_population_by_field_name = True
@@ -53,6 +53,7 @@ class Schema_Recursos(BaseModel):
                 "responsable": "string",
                 "recursos_actividad": ["string"],
                 "monto": 0,
+                "year":2023
             }
         }
 
@@ -69,3 +70,4 @@ class Schema_Recursos_Update(BaseModel):
     monto: int = None
     uuid_accion: str = None
     fecha: datetime = None
+    year:int = None

@@ -6,14 +6,15 @@ from pathlib import Path
 import pandas as pd
 from io import BytesIO
 from core.schemas.Schema_recursos import Schema_Recursos, Schema_Recursos_Update
-from core.db.repo_recursos import (registrar_recurso, obtener_recursos,
-                                   obtener_recursos_de_actividad,
-                                   modificar_recurso, registrar_actividades,
-                                   eliminar_actividades_many,
-                                   obtener_actividades_por_pme, obtener_actividad)
+from core.db.repo_recursos import (
+    registrar_recurso, obtener_recursos, obtener_recursos_de_actividad,
+    modificar_recurso, registrar_actividades, eliminar_actividades_many,
+    obtener_actividades_por_pme, obtener_actividad, agregar_year_a_actividad,
+    agregar_actividades_de_pme_anterior, obtener_actividades)
+from core.db.repo_pme import verificar_pme
+from datetime import datetime
 
 router = APIRouter()
-
 excel = Path('.') / 'pme_2.xlsx'
 
 
@@ -65,26 +66,29 @@ def descargar_actividad_pme(id_pme: str):
     try:
         data = obtener_actividades_por_pme(id_pme=id_pme)
         df = pd.DataFrame(data)
-        
+
         # Crear un objeto BytesIO en lugar de guardar el archivo en disco
         excel_file = BytesIO()
         df.to_excel(excel_file, index=False)
-        excel_file.seek(0)  # Asegurarse de que el puntero esté al principio del archivo
-        
+        excel_file.seek(
+            0)  # Asegurarse de que el puntero esté al principio del archivo
+
         # Configurar la respuesta HTTP para descargar el archivo
         return StreamingResponse(
             iter([excel_file.getvalue()]),
-            media_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-            headers={'Content-Disposition': 'attachment;filename=actividades.xlsx'}
-        )
+            media_type=
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            headers={
+                'Content-Disposition': 'attachment;filename=actividades.xlsx'
+            })
     except Exception as e:
         print(e)
 
 
-@router.get('/{id_pme}')
-def get_recursos(id_pme: str):
+@router.get('/{id_pme}/{year}')
+def get_recursos(id_pme: str, year: int):
     try:
-        lista = obtener_recursos(id_pme)
+        lista = obtener_recursos(id_pme, year)
         return lista
     except Exception as e:
         print(e)
@@ -130,11 +134,82 @@ def eliminar_actividades(id_pme: str):
 
 
 @router.get('/buscar/actividad/{id_actividad}')
-def get_actividad(id_actividad:str):
+def get_actividad(id_actividad: str):
     try:
-      data = obtener_actividad(id_actividad)
-      if data:
-          return JSONResponse(status_code=200, content={"msg":"Actividad", "data":data})
-      return JSONResponse(status_code=400, content={"msg":"No se encontró la actividad", "data":data})
+        data = obtener_actividad(id_actividad)
+        if data:
+            return JSONResponse(status_code=200,
+                                content={
+                                    "msg": "Actividad",
+                                    "data": data
+                                })
+        return JSONResponse(status_code=400,
+                            content={
+                                "msg": "No se encontró la actividad",
+                                "data": data
+                            })
     except Exception as e:
-      print(e)
+        print(e)
+
+
+@router.put('/add_year')
+def add_year_actividad_pme(id_pme: str, year: int):
+    try:
+        data = agregar_year_a_actividad(id_pme, year)
+        if data:
+            return JSONResponse(
+                status_code=200,
+                content={
+                    "msg":
+                    "El año fue agregado a las actividades seleccionadas"
+                })
+        return JSONResponse(
+            status_code=400,
+            content={
+                "msg":
+                "El año NO fue agregado en las actividades seleccionadas"
+            })
+    except Exception as e:
+        print(e)
+
+
+@router.post("/copiar/actividades/{id_pme}/{new_id_pme}/{year}")
+def add_actividades_de_pme_anterior(id_pme: str, new_id_pme: str, year: int):
+    try:
+        if id_pme == new_id_pme:
+            return JSONResponse(status_code=400,
+                                content={"msg": "Los PME son iguales"})
+        actividadesRegistradas = obtener_actividades(new_id_pme)
+        if len(actividadesRegistradas) > 1:
+            return JSONResponse(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                content={"msg": "PME ya tiene Actividades registradas"})
+        new_pme = verificar_pme(new_id_pme)
+        if new_pme:
+            data = obtener_actividades(id_pme)
+            new_data = [{
+                **x, 'id_pme': new_id_pme,
+                'year': year,
+                "fecha": datetime.today()
+            } for x in data]
+            data_json = [
+                jsonable_encoder(Schema_Recursos(**y)) for y in new_data
+            ]
+            new_data_register = agregar_actividades_de_pme_anterior(data_json)
+            if new_data_register:
+                return JSONResponse(
+                    status_code=201,
+                    content={
+                        "msg":
+                        "Las Actividades fueron creadas para este nuevo año",
+                        "data": new_data_register
+                    })
+            return JSONResponse(
+                status_code=400,
+                content={"msg": "No se pudo crear las nuevas Actividades"})
+        else:
+            return JSONResponse(
+                status_code=400,
+                content={"msg": "La id del nuevo pme no existe"})
+    except Exception as e:
+        print(e)

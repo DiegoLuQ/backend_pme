@@ -1,6 +1,7 @@
 from core.config.db import coleccion_accion
 from core.schemas.Schema_acciones import Schema_Acciones_Update
 from datetime import datetime, date
+from .repo_pme import verificar_pme
 import datetime as dt
 
 def crear_accion(model: str):
@@ -90,16 +91,18 @@ def patch_accion(id: str, model: Schema_Acciones_Update):
         print(e)
 
 
-def get_actividades(uuid_accion: str, id_pme:str):
+def get_actividades(uuid_accion: str, id_pme:str, year:int):
     try:
         result = coleccion_accion.aggregate([{
             "$match": {
                 "uuid_accion": uuid_accion,
-                "id_pme":id_pme
+                "id_pme":id_pme,
+                "year":year
             }
         }, {
             "$lookup": {
                 "from": "recursos",
+                "pipeline":[{"$match": { "year": year }}],
                 "localField": "uuid_accion",
                 "foreignField": "uuid_accion",
                 "as": "actividades"
@@ -123,5 +126,16 @@ def delete_acciones(id_pme:str):
       if id_pme:
           coleccion_accion.delete_many({'id_pme':id_pme})
           return True
+    except Exception as e:
+      print(e)
+
+def agregar_year_a_accion(id_pme, year):
+    try:
+      pmeExist = verificar_pme(id_pme)
+      if pmeExist:
+          coleccion_accion.update_many({"id_pme":id_pme}, {"$set":{"year":year}})
+          return True
+      else:
+          return False
     except Exception as e:
       print(e)

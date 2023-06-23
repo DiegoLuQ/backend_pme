@@ -1,5 +1,6 @@
 from core.schemas.Schema_recursos import Schema_Recursos, Schema_Recursos_Update
 from core.config.db import coleccion_recursos
+from .repo_pme import verificar_pme
 
 
 def registrar_recurso(model: dict):
@@ -24,15 +25,21 @@ def registrar_actividades(lista_actividades_pme_interno: list):
         print(e)
 
 
-def obtener_recursos(id_pme):
+def obtener_recursos(id_pme: str, year: int):
     try:
         result = coleccion_recursos.aggregate([{
             "$match": {
-                "id_pme": id_pme
+                "id_pme": id_pme,
+                "year": year
             }
         }, {
             "$lookup": {
                 "from": "acciones",
+                "pipeline": [{
+                    "$match": {
+                        "year": year
+                    }
+                }],
                 "localField": "uuid_accion",
                 "foreignField": "uuid_accion",
                 "as": "accion"
@@ -137,11 +144,40 @@ def eliminar_actividades_many(id_pme: str):
 
 def obtener_actividad(id_actividad: str) -> dict:
     try:
-        print(id_actividad)
-        data =  coleccion_recursos.find_one({"_id":id_actividad})
+        data = coleccion_recursos.find_one({"_id": id_actividad})
         if data:
             return data
         else:
             return False
+    except Exception as e:
+        print(e)
+
+
+def agregar_year_a_actividad(id_pme: str, year: int):
+    try:
+        pmeExist = verificar_pme(id_pme)
+        if pmeExist:
+            coleccion_recursos.update_many({"id_pme": id_pme},
+                                           {"$set": {
+                                               "year": year
+                                           }})
+            return True
+        return False
+    except Exception as e:
+        print(e)
+
+
+def obtener_actividades(id_pme):
+    try:
+        data = [x for x in coleccion_recursos.find({"id_pme": id_pme}, {"_id":0})]
+        return data
+    except Exception as e:
+        print(e)
+
+
+def agregar_actividades_de_pme_anterior(data: list):
+    try:
+        coleccion_recursos.insert_many(data)
+        return True
     except Exception as e:
         print(e)

@@ -41,7 +41,8 @@ class Schema_Acciones(BaseModel):
     monto_sep: int = None
     monto_total: int = None
     id_pme: str = None
-    fecha_actualizacion = datetime.today()
+    year: int = None
+    fecha_actualizacion : datetime = None
 
     class Config:
         allow_population_by_field_name = True
@@ -85,6 +86,7 @@ class Schema_Acciones(BaseModel):
                 "informe de evaluación de impacto, Planificación y registro de las actividades de reforzamiento,     Registro de asistencia a talleres de reforzamiento",
                 "monto_subvencion_general":
                 0,
+                "year":2023,
                 "monto_sep":
                 10000000,
                 "monto_total":
