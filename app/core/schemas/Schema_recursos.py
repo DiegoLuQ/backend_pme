@@ -35,7 +35,7 @@ class Schema_Recursos(BaseModel):
     recursos_actividad: List[str]
     monto: int = None
     year:int = None
-    fecha : datetime = None
+    fecha = datetime.today()
 
     class Config:
         allow_population_by_field_name = True

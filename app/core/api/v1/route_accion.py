@@ -6,7 +6,7 @@ from core.db.repo_acciones import (
     crear_accion, listar_acciones, listar_acciones_id_pme,
     listar_acciones_por_fecha, crear_acciones, get_actividades, patch_accion,
     crear_acciones_anio_anterior, delete_acciones, listar_acciones_user,
-    agregar_year_a_accion)
+    agregar_year_a_accion, obtener_subdimensiones)
 from core.db.repo_pme import acciones_pme
 from fastapi.encoders import jsonable_encoder
 from core.db.repo_pme import verificar_pme
@@ -55,7 +55,7 @@ def pme_excel():
 
 @router.get('/descargar/pme/admin/{id_pme}')
 def descargar_pme_admin(id_pme: str):
-    now = datetime
+    
     try:
         data = listar_acciones(id_pme)
         df = pd.DataFrame(data)
@@ -79,7 +79,7 @@ def descargar_pme_admin(id_pme: str):
 
 @router.get('/descargar/pme/user/{id_pme}')
 def descargar_pme_user(id_pme: str):
-    now = datetime
+    
     try:
         data = listar_acciones_user(id_pme)
         df = pd.DataFrame(data)
@@ -255,3 +255,12 @@ def add_year_acciion_pme(id_pme: str, year: int):
 
     except Exception as e:
         print(e)
+
+
+@router.get("/subdimensiones/")
+def get_subdimensiones():
+    try:
+      data = obtener_subdimensiones()
+      return data
+    except Exception as e:
+      print(e)

@@ -3,6 +3,7 @@ from core.config.db import coleccion_recursos
 from .repo_pme import verificar_pme
 
 
+
 def registrar_recurso(model: dict):
     try:
         data = coleccion_recursos.insert_one(model)

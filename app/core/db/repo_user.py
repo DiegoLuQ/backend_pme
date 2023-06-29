@@ -30,3 +30,12 @@ def buscar_usuario_x_correo(correo: str) -> dict:
         return data
     except Exception as e:
         print(e)
+
+def registrar_usuarios(model:list):
+    try:
+      data = coleccion_user.insert_many(model)
+      if data:
+          return True
+      return False
+    except Exception as e:
+      print(e)

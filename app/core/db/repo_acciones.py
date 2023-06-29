@@ -3,7 +3,7 @@ from core.schemas.Schema_acciones import Schema_Acciones_Update
 from datetime import datetime, date
 from .repo_pme import verificar_pme
 import datetime as dt
-
+from itertools import chain
 def crear_accion(model: str):
     try:
         data = coleccion_accion.insert_one(model)
@@ -137,5 +137,15 @@ def agregar_year_a_accion(id_pme, year):
           return True
       else:
           return False
+    except Exception as e:
+      print(e)
+
+def obtener_subdimensiones():
+    try:
+      data = coleccion_accion.find()
+      new_data_sub = [x["subdimensiones"] for x in data]
+      elementos_sub = set(chain.from_iterable(new_data_sub))
+      return elementos_sub
+
     except Exception as e:
       print(e)

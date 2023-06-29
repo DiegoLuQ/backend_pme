@@ -5,8 +5,11 @@ from fastapi.responses import JSONResponse
 from core.db.repo_user import *
 from core.schemas.Schema_user import Schema_User
 from utils.hash import hash_password
+from pathlib import Path
+import pandas as pd
 
 router = APIRouter()
+excel = Path('.') / 'pme_2.xlsx'
 
 
 @router.post('/registrar')
@@ -48,3 +51,20 @@ def get_usuarios():
         print(e)
 
 
+@router.post('/registrar_usuarios')
+def post_usuarios(sheetname: str):
+    try:
+        df = pd.read_excel(excel, sheet_name=sheetname)
+        data = df.to_dict('records')
+        for x in range(len(data)):
+            data[x]['subareas'] = data[x]['subareas'].split(',')
+            data[x]['id_colegio'] = data[x]['id_colegio'].split(',')
+            data[x]['contraseña'] = hash_password(data[x]['contraseña'])
+        new_data = [jsonable_encoder(Schema_User(**x)) for x in data]
+        data_registrada = registrar_usuarios(new_data)
+
+        if data_registrada:
+            return JSONResponse(status_code=200, content={"msg":"Usuarios Registrados"})
+        return JSONResponse(status_code=400, content={"msg":"Los usuarios no fueron registrados"})
+    except Exception as e:
+        print(e)

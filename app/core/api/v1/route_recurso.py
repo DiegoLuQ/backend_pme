@@ -22,6 +22,7 @@ excel = Path('.') / 'pme_2.xlsx'
 def add_recurso(model: Schema_Recursos):
     try:
         encoder_model = jsonable_encoder(model)
+        # encoder_model["fecha"] = datetime.today()
         data = registrar_recurso(encoder_model)
         if data:
             return JSONResponse(status_code=201,
@@ -42,8 +43,7 @@ def add_actividades(hoja: str):
         df = pd.read_excel(excel, sheet_name=hoja)
         data = df.to_dict('records')
         for x in range(len(data)):
-            data[x]['recursos_actividad'] = data[x][
-                'recursos_actividad'].split(',')
+            data[x]['recursos_actividad'] = data[x]['recursos_actividad'].split(',')
         new_data = [jsonable_encoder(Schema_Recursos(**x)) for x in data]
         data_registrada = registrar_actividades(new_data)
         if data_registrada:
