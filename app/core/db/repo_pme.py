@@ -14,17 +14,15 @@ def verificar_pme(id_pme):
 
 def registrar_pme(model: dict):
     try:
-        data = coleccion_pme.find_one({
-            'id_colegio': model["id_colegio"],
-            'year': model['year']
-        })
-        if data:
-            return False
-        data = coleccion_pme.insert_one(model)
-        if data:
-            new_data = coleccion_pme.find_one({'_id': data.inserted_id})
-            return new_data
-        return False
+        # Use find_one_and_update with upsert=True to avoid race conditions
+        # and ensure atomicity.
+        result = coleccion_pme.find_one_and_update(
+            {'id_colegio': model["id_colegio"], 'year': model['year']},
+            {'$setOnInsert': model},
+            upsert=True,
+            return_document=True
+        )
+        return result
     except Exception as e:
         print(e)
 
@@ -80,8 +78,8 @@ def listar_pme():
 
 def eliminar_pme(id: str):
     try:
-        data = coleccion_pme.find_one({'_id': id})
-        if data:
+        result = coleccion_pme.delete_one({'_id': id})
+        if result.deleted_count > 0:
             return True
         return False
     except Exception as e:

@@ -10,8 +10,10 @@ from .route_user import router as router_user
 from .route_login import router as router_login
 from .route_requerimiento import router as router_requerimiento
 from .route_busqueda import router as router_busqueda
+from .route_delete import router as router_delete
 router = APIRouter()
 
+router.include_router(router_delete, prefix='/delete', tags=["Delete"])
 router.include_router(router_user, prefix='/user', tags=["Usuarios"])
 router.include_router(router_login, prefix='/login', tags=["Login"])
 router.include_router(router_colegio, prefix='/colegio', tags=["Colegios"])
